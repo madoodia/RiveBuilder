@@ -155,4 +155,4 @@ target_link_libraries(rive_cpp PRIVATE harfbuzz)
 target_link_libraries(rive_cpp PRIVATE sheenbidi)
 
 
-file(COPY ${RIVE_CPP_SOURCE_DIR}/include DESTINATION $ENV{ROOT}/include)
+file(COPY ${RIVE_CPP_SOURCE_DIR}/include DESTINATION $ENV{ROOT})
