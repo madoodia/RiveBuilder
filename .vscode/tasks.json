@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build",
+      "windows": {
+        "command": "${workspaceFolder}/build.bat"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/build.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/build.sh"
+      },
+      "args": [
+        "${workspaceFolder}",
+        "${relativeFileDirname}",
+        "${fileBasenameNoExtension}"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "type": "shell",
+      "label": "deploy",
+      "windows": {
+        "command": "${workspaceFolder}/deploy.bat"
+      },
+      "linux": {
+        "command": "${workspaceFolder}/deploy.sh"
+      },
+      "osx": {
+        "command": "${workspaceFolder}/deploy.sh"
+      },
+      "args": [
+        "${workspaceFolder}"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "run",
+      "windows": {
+        "command": "${workspaceFolder}\\run.bat"
+      },
+      "linux": {
+        "command": "${workspaceFolder}\\run"
+      },
+      "args": [
+        "${workspaceFolder}"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "qmlscene",
+      "command": [
+        "C:/Qt/5.15.2/msvc2019_64/bin/qmlscene ${fileDirname}/${fileBasename}"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "qmlscene6",
+      "command": [
+        "C:/Qt/6.2.2/msvc2019_64/bin/qml ${fileDirname}/${fileBasename}"
+      ],
+      "problemMatcher": []
+    },
+  ]
+}
