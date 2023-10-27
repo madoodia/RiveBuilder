@@ -26,7 +26,8 @@ if(WIN32)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $ENV{ROOT}/bin)
 endif(WIN32)
 
-
+# setting /MD for the project
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
 add_subdirectory($ENV{ROOT}3rdParty/rive/cmake)
 
 
