@@ -25,7 +25,7 @@ if not exist "build" (
 
 cd "%ROOT%/build"
 
-@REM better to create sln file set the /MD in Runtime Lbrary options in Visual studio and buil it there
+@REM better to create sln file with setting the /MD in Runtime Lbrary options (through CmakeList.txt) in Visual studio and build it there
 cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_CXX_FLAGS="/bigobj" "%ROOT%"
 @REM addin /M as additional option does not work
 @REM cmake -G "NMake Makefiles"  -DCMAKE_CXX_FLAGS="/bigobj" "%ROOT%" 
