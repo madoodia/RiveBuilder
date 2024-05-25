@@ -13,8 +13,6 @@ project(RiveBuilder
     LANGUAGES CXX
 )
 
-
-# Set up Qt configuration and enable C++17
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_STANDARD 17)
