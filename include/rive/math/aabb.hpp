@@ -2,9 +2,7 @@
 #define _RIVE_AABB_HPP_
 
 #include "rive/span.hpp"
-#include "rive/math/mat2d.hpp"
 #include "rive/math/vec2d.hpp"
-#include <cstddef>
 #include <limits>
 
 namespace rive
@@ -15,10 +13,30 @@ struct IAABB
 
     constexpr int width() const { return right - left; }
     constexpr int height() const { return bottom - top; }
-    constexpr bool empty() const { return width() <= 0 || height() <= 0; }
+    constexpr bool empty() const { return left >= right || top >= bottom; }
 
     IAABB inset(int dx, int dy) const { return {left + dx, top + dy, right - dx, bottom - dy}; }
     IAABB offset(int dx, int dy) const { return {left + dx, top + dy, right + dx, bottom + dy}; }
+    IAABB join(IAABB b) const
+    {
+        return {std::min(left, b.left),
+                std::min(top, b.top),
+                std::max(right, b.right),
+                std::max(bottom, b.bottom)};
+    }
+    IAABB intersect(IAABB b) const
+    {
+        return {std::max(left, b.left),
+                std::max(top, b.top),
+                std::min(right, b.right),
+                std::min(bottom, b.bottom)};
+    }
+
+    bool operator==(const IAABB& o) const
+    {
+        return left == o.left && top == o.top && right == o.right && bottom == o.bottom;
+    }
+    bool operator!=(const IAABB& o) const { return !(*this == o); }
 };
 
 class AABB
@@ -57,6 +75,12 @@ public:
     Vec2D size() const { return {width(), height()}; }
     Vec2D center() const { return {(minX + maxX) * 0.5f, (minY + maxY) * 0.5f}; }
 
+    bool isEmptyOrNaN() const
+    {
+        // Use "inverse" logic so we return true if either of the comparisons fail due to a NaN.
+        return !(width() > 0 && height() > 0);
+    }
+
     AABB inset(float dx, float dy) const
     {
         AABB r = {minX + dx, minY + dy, maxX - dx, maxY - dy};
@@ -67,6 +91,7 @@ public:
     AABB offset(float dx, float dy) const { return {minX + dx, minY + dy, maxX + dx, maxY + dy}; }
 
     IAABB round() const;
+    IAABB roundOut() const; // Rounds out to integer bounds that fully contain the rectangle.
 
     ///
     /// Initialize an AABB to values that represent an invalid/collapsed
@@ -96,6 +121,8 @@ public:
         return Vec2D(width() == 0.0f ? 0.0f : (point.x - left()) * 2.0f / width() - 1.0f,
                      (height() == 0.0f ? 0.0f : point.y - top()) * 2.0f / height() - 1.0f);
     }
+
+    bool contains(Vec2D position) const;
 };
 
 } // namespace rive

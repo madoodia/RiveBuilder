@@ -5,7 +5,10 @@
 #include <stddef.h>
 #include <vector>
 #include "rive/animation/linear_animation_instance.hpp"
-#include "rive/animation/keyed_callback_reporter.hpp"
+#include "rive/animation/state_instance.hpp"
+#include "rive/animation/state_transition.hpp"
+#include "rive/core/field_types/core_callback_type.hpp"
+#include "rive/hit_result.hpp"
 #include "rive/listener_type.hpp"
 #include "rive/scene.hpp"
 
@@ -20,7 +23,7 @@ class SMINumber;
 class SMITrigger;
 class Shape;
 class StateMachineLayerInstance;
-class HitShape;
+class HitComponent;
 class NestedArtboard;
 class Event;
 class KeyedProperty;
@@ -37,27 +40,32 @@ private:
     float m_secondsDelay;
 };
 
-class StateMachineInstance : public Scene, public KeyedCallbackReporter
+class StateMachineInstance : public Scene
 {
     friend class SMIInput;
     friend class KeyedProperty;
+    friend class HitComponent;
+    friend class StateMachineLayerInstance;
 
 private:
-    void markNeedsAdvance();
-
     /// Provide a hitListener if you want to process a down or an up for the pointer position
     /// too.
-    void updateListeners(Vec2D position, ListenerType hitListener);
+    HitResult updateListeners(Vec2D position, ListenerType hitListener);
 
     template <typename SMType, typename InstType>
     InstType* getNamedInput(const std::string& name) const;
-    void notifyEventListeners(std::vector<EventReport> events, NestedArtboard* source);
+    void notifyEventListeners(const std::vector<EventReport>& events, NestedArtboard* source);
+    void sortHitComponents();
+    double randomValue();
+    StateTransition* findRandomTransition(StateInstance* stateFromInstance, bool ignoreTriggers);
+    StateTransition* findAllowedTransition(StateInstance* stateFromInstance, bool ignoreTriggers);
 
 public:
     StateMachineInstance(const StateMachine* machine, ArtboardInstance* instance);
     StateMachineInstance(StateMachineInstance const&) = delete;
     ~StateMachineInstance() override;
 
+    void markNeedsAdvance();
     // Advance the state machine by the specified time. Returns true if the
     // state machine will continue to animate after this advance.
     bool advance(float seconds);
@@ -88,9 +96,10 @@ public:
 
     bool advanceAndApply(float secs) override;
     std::string name() const override;
-    void pointerMove(Vec2D position) override;
-    void pointerDown(Vec2D position) override;
-    void pointerUp(Vec2D position) override;
+    HitResult pointerMove(Vec2D position) override;
+    HitResult pointerDown(Vec2D position) override;
+    HitResult pointerUp(Vec2D position) override;
+    HitResult pointerExit(Vec2D position) override;
 
     float durationSeconds() const override { return -1; }
     Loop loop() const override { return Loop::oneShot; }
@@ -110,19 +119,14 @@ public:
     NestedArtboard* parentNestedArtboard() { return m_parentNestedArtboard; }
 
     /// Tracks an event that reported, will be cleared at the end of the next advance.
-    void reportEvent(Event* event, float secondsDelay = 0.0f);
+    void reportEvent(Event* event, float secondsDelay = 0.0f) override;
 
     /// Gets the number of events that reported since the last advance.
     std::size_t reportedEventCount() const;
 
     /// Gets a reported event at an index < reportedEventCount().
     const EventReport reportedEventAt(std::size_t index) const;
-
-    /// Report which time based events have elapsed on a timeline within this
-    /// state machine.
-    void reportKeyedCallback(uint32_t objectId,
-                             uint32_t propertyKey,
-                             float elapsedSeconds) override;
+    bool playsAudio() override { return true; }
 
 private:
     std::vector<EventReport> m_reportedEvents;
@@ -131,8 +135,7 @@ private:
     std::vector<SMIInput*> m_inputInstances; // we own each pointer
     size_t m_layerCount;
     StateMachineLayerInstance* m_layers;
-    std::vector<std::unique_ptr<HitShape>> m_hitShapes;
-    std::vector<NestedArtboard*> m_hitNestedArtboards;
+    std::vector<std::unique_ptr<HitComponent>> m_hitComponents;
     StateMachineInstance* m_parentStateMachineInstance = nullptr;
     NestedArtboard* m_parentNestedArtboard = nullptr;
 };

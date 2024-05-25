@@ -30,6 +30,7 @@ public:
 
     bool empty() const { return m_Points.empty(); }
     AABB bounds() const;
+    size_t countMoveTos() const;
 
     void move(Vec2D);
     void line(Vec2D);
@@ -48,7 +49,6 @@ public:
 
     RawPath transform(const Mat2D&) const;
     void transformInPlace(const Mat2D&);
-    RawPath operator*(const Mat2D& mat) const { return this->transform(mat); }
 
     Span<const Vec2D> points() const { return m_Points; }
     Span<Vec2D> points() { return m_Points; }

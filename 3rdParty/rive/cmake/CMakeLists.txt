@@ -131,7 +131,10 @@ add_definitions(-D_UNICODE -DUNICODE)
 add_definitions(-D_USE_MATH_DEFINES)
 
 
-file(GLOB_RECURSE RIVE_CPP_SOURCES "${RIVE_CPP_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE RIVE_CPP_SOURCES 
+  "${RIVE_CPP_SOURCE_DIR}/src/*.cpp"
+  "${RIVE_CPP_SOURCE_DIR}/utils/*.cpp"
+)
 
 if(BUILD_SHARED_LIBS)
   add_library(rive_cpp SHARED ${RIVE_CPP_SOURCES})

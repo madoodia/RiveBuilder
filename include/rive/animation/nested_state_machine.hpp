@@ -2,6 +2,7 @@
 #define _RIVE_NESTED_STATE_MACHINE_HPP_
 #include "rive/animation/state_machine_instance.hpp"
 #include "rive/generated/animation/nested_state_machine_base.hpp"
+#include "rive/hit_result.hpp"
 #include "rive/math/vec2d.hpp"
 #include <memory>
 
@@ -19,13 +20,14 @@ private:
 public:
     NestedStateMachine();
     ~NestedStateMachine() override;
-    void advance(float elapsedSeconds) override;
+    bool advance(float elapsedSeconds) override;
     void initializeAnimation(ArtboardInstance*) override;
     StateMachineInstance* stateMachineInstance();
 
-    void pointerMove(Vec2D position);
-    void pointerDown(Vec2D position);
-    void pointerUp(Vec2D position);
+    HitResult pointerMove(Vec2D position);
+    HitResult pointerDown(Vec2D position);
+    HitResult pointerUp(Vec2D position);
+    HitResult pointerExit(Vec2D position);
 
     void addNestedInput(NestedInput* input);
 };
